@@ -1,92 +1,134 @@
-version: 2.1
-
+version: 3.1
 orbs:
-  android: circleci/android@0.2.1
-
+  android: circleci/android@0.3
 references:
-  workspace: &workspace
-    .
-
-  executor: &executor
-    android/android
-
+  workspace: &
+ workspace
+  executor: &
+  executor
+  android/android
   ## Cache
-  gradle_key: &gradle_key
-    jars-{{ checksum "build.gradle.kts" }}-{{ checksum "verify/build.gradle.kts" }}-{{ checksum "security/build.gradle.kts" }}
-
+  gradle_key: & 
+  gradle_key
+    jars 
+    - 
+    {{ checksum "build.gradle.kts" }} 
+    - {{ checksum "verify/build.gradle.kts" }} 
+    - 
+    {{ checksum "security/build.gradle.kts" }}
   restore_gradle_cache: &restore_gradle_cache
     restore_cache:
-      key: *gradle_key
-
-  save_gradle_cache: &save_gradle_cache
-    save_cache:
-      key: *gradle_key
-      paths:
-        - ~/.gradle
-
+key: *gradle_key save_gradle_cache:
+&
+save_gradle_cache save_cache:
+ key: *gradle_key
+   paths: -
+   ~/.gradle
   ## Build
-  decrypt_google_services: &decrypt_google_services
+  decrypt_google_services: 
+  & 
+decrypt_google_services
     run:
-      name: Decrypt SampleApp Google Services
-      command: cd sample; ./add_google_services_file $GOOGLE_SERVICES_KEY $GOOGLE_SERVICES_IV
-
+      name: Decrypt SampleApp 
+  Google Services
+      command: cd sample; ./add_google_services_file 
+$GOOGLE_SERVICES_KEY $GOOGLE_SERVICES_IV
   assemble_build: &assemble_build
     run:
       name: Assemble Build
-      command: bundle exec fastlane assemble
-
+      command: bundle 
+  exec fastlane 
+  assemble
   #Firebase Test Lab
-  store_google_service_account: &store_google_service_account
+  store_google_service_account: 
+  & 
+store_google_service_account   
+run:    
+  name: Store Google Service Account
+command: echo 
+    $GCLOUD_SERVICE_KEY 
+    > ${HOME}/gcloud-service-key.json
+  authorize_gcloud: & 
+  authorize_gcloud
     run:
-      name: Store Google Service Account
-      command: echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
-
-  authorize_gcloud: &authorize_gcloud
-    run:
-      name: Authorize gcloud and set config defaults
-      command: |
-        sudo gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
-        sudo gcloud --quiet config set project twilioverify-sampleapp
-
+      name: Authorize gcloud and
+      set config defaults   
+  command: |
+        sudo gcloud    
+    auth activate-service-account 
+    --key-file=${HOME}
+    /gcloud-service
+    -key.json
+        sudo gcloud 
+        --quiet config 
+        set project twilioverify
+        -sampleapp
   # Firebase app distribution
-  store_gcloud_app_distribution_service: &store_gcloud_app_distribution_service
+store_gcloud_app_distribution_service: 
+&
+store_gcloud_app_distribution_service
     run:
       name: Store GCloud App Distribution service
-      command: echo $GCLOUD_APP_DISTRIBUTION_SERVICE_KEY > ${HOME}/gcloud-app-distribution-service-key.json
-
-  #Reporting
-  sdk_sizer: &sdk_sizer
-    run:
-      name: Size impact report
-      command: bundle exec fastlane sdk_sizer
-  lint_checker: &lint_checker
-    run:
-      name: Check android, kotlin style convention
-      command: bundle exec fastlane lint_checker
-  danger_checker: &danger_checker
-    run:
-      name: Danger check
-      command: bundle exec fastlane danger_check
-
-  #Release
-  release: &release
-    run:
-      name: Release SDK
-      command: bundle exec fastlane release
-  signing_key: &signing_key
-    run:
-      name: Install signing key
-      command: echo $SIGNING_KEY | base64 -d >> $SIGNING_SECRET_KEY_RING_FILE
-
+      command: 
+  echo  $GCLOUD_APP_DISTRIBUTION_SERVICE_KEY > ${HOME}/gcloud-app-distribution-service-key.json
+       #Reporting
+     sdk_sizer: 
+     & 
+  sdk_sizer
+run:
+name: Size impact report
+ command: bundle
+ exec fastlane 
+ sdk_sizer
+  lint_checker:
+  &
+  lint_checker
+run:
+ name: Check android,
+ kotlin style 
+ convention
+   command: bundle exec
+   fastlane lint_checker
+  danger_checker: 
+  &
+  danger_checker
+  run:
+    name: Danger check
+command: bundle 
+exec fastlane
+danger_check
+#Release
+  release: 
+  &
+  release
+  run:
+ name: 
+ Release SDK
+command: bundle
+exec fastlane 
+release
+  signing_key: &
+  signing_key
+run:
+name: Install 
+signing key
+      command: 
+echo $SIGNING_KEY 
+| base64 -d >
+> $SIGNING_SECRET_KEY_RING_FILE
 commands:
   setup:
     steps:
       - checkout
-      - restore_cache:
-          key: v1-gems-{{ checksum "Gemfile.lock" }}
+      - restore_cache:         
+ key: v1 
+ -gems-
+      {{ checksum "Gemfile.lock" }}
       - run:
           name: Install Gems
-          command: bundle check || bundle install --path vendor/bundle
+          command: bundle check || 
+          bundle install
+          --path vendor/bundle
       - save_cache:
           key: v1-gems-{{ checksum "Gemfile.lock" }}
           paths:
@@ -271,12 +313,7 @@ jobs:
             sudo gcloud firebase test android run --project twilioverify-sampleapp ftl/verify-ftl-config.yaml:twilio-verify-tests
   sdk_size_report:
     executor: *executor
-    steps:
-      - setup
-      - *restore_gradle_cache
-      - *decrypt_google_services
-      - *sdk_sizer
-      - *save_gradle_cache
+    steps: setup *restore_gradle_cache *decrypt_google_services *sdk_sizer *save_gradle_cache
       - store_artifacts:
           path: "verify/build/outputs/sizeReport"
           destination: sizeReport
@@ -286,17 +323,10 @@ jobs:
           to: builds
       - persist_to_workspace:
           root: *workspace
-          paths:
-            - builds
-  lint:
-    executor: *executor
-    steps:
-      - setup
-      - *restore_gradle_cache
-      - *decrypt_google_services
-      - *lint_checker
-      - *danger_checker
-      - *save_gradle_cache
+          paths: 
+          - builds
+          lintexecutor: *executorsteps
+      - setup *restore_gradle_cache *decrypt_google_services*lint_checker*danger_checker*save_gradle_cache
       - store_artifacts:
           path: "verify/build/reports"
           destination: verify-test-coverage
@@ -311,10 +341,12 @@ jobs:
     steps:
       - setup
       - attach_workspace:
-          at: *workspace
-      - *restore_gradle_cache
-      - *decrypt_google_services
-      - *store_gcloud_app_distribution_service
+          at: *work
+          space*restore_gradle
+          _cache*decrypt
+          _google_services*store
+          _gcloud_app
+          _distribution_service
       - distribute_debug_sample_app:
           env: "DEV"
           base_url: $DEV_URL
@@ -323,23 +355,21 @@ jobs:
           base_url: $STAGE_URL
       - distribute_debug_sample_app:
           env: "PROD"
-          base_url: $PROD_URL
-      - *save_gradle_cache
-  release_sdk:
+          base_url: $PROD_URL*save
+_gradle_cacherelease_sdk:
     executor: *executor
     steps:
       - setup
       - attach_workspace:
-          at: *workspace
-      - *restore_gradle_cache
-      - *decrypt_google_services
-      - *store_gcloud_app_distribution_service
-      - *signing_key
-      - *release
-      - *save_gradle_cache
+          at: *workspace*re
+          store_gradle_
+          cache*decrypt_google_
+          services*store_gcloud_app_
+          distribution_service *signing_key *release*save
+          _gradle
+          _cache
 workflows:
   version: 2
-
   workflow:
     jobs:
       - assemble_build
@@ -370,19 +400,14 @@ workflows:
           requires:
             - security_instrumentation_tests_multiple_devices
             - verify_instrumentation_tests_multiple_devices
-          filters:
             branches:
-              only:
-                - /feature.*/
-                - /release.*/
-                - /hotfix.*/
-                - dev
+            -/*/*/*/*/                
+            - dev
       - release_sdk:
           requires:
             - security_instrumentation_tests_multiple_devices
             - verify_instrumentation_tests_multiple_devices
             - sdk_size_report
-          filters:
             branches:
-              only:
-                - main
+                - ["master"]
+                - ["all"]
