@@ -1,2 +1,7 @@
-json_key_file("") # Path to the json secret file - Follow https://docs.fastlane.tools/actions/supply/#setup to get one
-package_name("com.twilio.verify") # e.g. com.krausefx.app
+json_key_file("")
+                 # Path to the json secret file 
+              - Follow
+    https://docs.fastlane.tools/actions/supply/
+#setup to get one    
+           package_name("com.twilio.verify") 
+# com.krausefx.app
